@@ -155,7 +155,7 @@ describe('First suite', () => {
     // cy.get('[type="checkbox"]').click({force: true}) -> won't work since cy.click() can only be called on a single element
   })
 
-  it.only('assert propery 2.0', () => {
+  it('assert propery 2.0', () => {
 
     function selectDayFromCurrent(day) {
       let date = new Date()
@@ -189,5 +189,39 @@ describe('First suite', () => {
       cy.wrap(input).invoke('prop', 'value').should('contain', dateAssert)
     })
 
+  })
+
+  it.only('lists and dropdowns', () => {
+
+    cy.visit('/')
+
+    //1
+    //cy.get('nav nb-select').click()
+    //cy.get('.options-list').contains('Dark').click()
+    //cy.get('nav nb-select').should('contain', 'Dark')
+    //cy.get('nb-layout-header nav').should('have.css', 'background-color', 'rgb(34, 43, 69)')
+    
+    //2
+    cy.get('nav nb-select').then(dropDown => {
+      cy.wrap(dropDown).click()
+      cy.get('.options-list nb-option').each( (listItem, index) => {
+        const itemText = listItem.text().trim()
+
+        const colors = {
+          "Light": "rgb(255, 255, 255)",
+          "Dark": "rgb(34, 43, 69)",
+          "Cosmic": "rgb(50, 50, 89)",
+          "Corporate": "rgb(255, 255, 255)"
+        }
+
+        cy.wrap(listItem).click()
+        cy.wrap(dropDown).should('contain', itemText)
+        cy.get('nb-layout-header nav').should('have.css', 'background-color', colors[itemText])
+        
+        if( index < 3){
+          cy.wrap(dropDown).click()
+        }
+      })
+    })
   })
 })
