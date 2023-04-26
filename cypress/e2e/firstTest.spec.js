@@ -269,7 +269,7 @@ describe('First suite', () => {
     })
   })
 
-  it.only('tooltips', () => {
+  it('tooltips', () => {
 
     cy.visit('/')
     cy.contains('Modal & Overlays').click()
@@ -277,5 +277,29 @@ describe('First suite', () => {
 
     cy.contains('nb-card', 'Colored Tooltips').contains('Default').click()
     cy.get('nb-tooltip').should('contain', 'This is a tooltip')
+  })
+
+  it.only('dialog box', () => {
+
+    cy.visit('/')
+    cy.contains('Tables & Data').click()
+    cy.contains('Smart Table').click()
+
+    //won't fail if the confirmation window is not displayed
+    // cy.get('tbody tr').first().find('.nb-trash').click()
+    // cy.on('window:confirm', (confirm) => {
+    //  expect(confirm).to.equal('Are you sure you want to delete?')
+    // })
+
+    //will fail if the confirmation window is not displayed
+    const stub = cy.stub()
+    cy.on('window:confirm', stub)
+    cy.get('tbody tr').first().find('.nb-trash').click().then(() => {
+      expect(stub.getCall(0)).to.be.calledWith('Are you sure you want to delete?')
+    })
+
+    //cancel
+    cy.get('tbody tr').first().find('.nb-trash').click()
+    cy.on('window:confirm', () => false)
   })
 })
